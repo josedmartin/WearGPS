@@ -29,6 +29,7 @@ android {
         targetSdk 31
         versionCode 1
         versionName "1.0"
+        testInstrumentationRunnerArguments = ["com.android.location.provider": "mock"]
     }
     buildTypes {
         release {
