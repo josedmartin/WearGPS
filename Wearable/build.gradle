@@ -52,6 +52,13 @@ dependencies {
 
     // This dependency is necessary for ambient mode
     implementation 'androidx.wear:wear:1.2.0'
+
+    // For developers using AndroidX in their applications
+    implementation 'pub.devrel:easypermissions:3.0.0'
+
+    // For developers using the Android Support Library
+    implementation 'pub.devrel:easypermissions:2.0.1'
+
 }
 // [END maps_wear_os_dependencies]
 

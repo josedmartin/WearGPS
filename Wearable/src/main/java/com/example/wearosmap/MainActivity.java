@@ -16,29 +16,44 @@
 
 package com.example.wearosmap;
 
+import android.Manifest;
+import android.Manifest.permission;
+import android.annotation.SuppressLint;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.FrameLayout;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.wear.ambient.AmbientModeSupport;
 import androidx.wear.ambient.AmbientModeSupport.AmbientCallback;
 import androidx.wear.widget.SwipeDismissFrameLayout;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMapOptions;
-import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
+import com.google.android.gms.maps.GoogleMap.OnMyLocationClickListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.Arrays;
+
+import pub.devrel.easypermissions.AppSettingsDialog;
+import pub.devrel.easypermissions.EasyPermissions;
 
 /**
  * Sample that shows how to set up a basic Google Map on Wear OS.
  */
 // [START maps_wear_os_swipe_dismiss_callback]
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback,
-    AmbientModeSupport.AmbientCallbackProvider {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, AmbientModeSupport.AmbientCallbackProvider,
+        OnMyLocationButtonClickListener,
+        OnMyLocationClickListener,
+        ActivityCompat.OnRequestPermissionsResultCallback {
 
     // [START_EXCLUDE silent]
     private SupportMapFragment mapFragment;
@@ -72,23 +87,128 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Obtain the MapFragment and set the async listener to be notified when the map is ready.
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
             .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);
+        }
     }
 
-    // [START_EXCLUDE]
-    // [START maps_wear_os_on_map_ready]
-    private static final LatLng SYDNEY = new LatLng(-33.85704, 151.21522);
+    /**
+     * Request code for location permission request.
+     *
+     * @see #onRequestPermissionsResult(int, String[], int[])
+     */
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
+    /**
+     * Flag indicating whether a requested permission has been denied after returning in {@link
+     * #onRequestPermissionsResult(int, String[], int[])}.
+     */
+    private boolean permissionDenied = false;
+    private GoogleMap map;
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
-        // Add a marker with a title that is shown in its info window.
-        googleMap.addMarker(new MarkerOptions().position(SYDNEY)
-            .title("Sydney Opera House"));
+        map = googleMap;
+        map.setOnMyLocationButtonClickListener(this);
+        map.setOnMyLocationClickListener(this);
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37,-5),8));
 
-        // Move the camera to show the marker.
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SYDNEY, 10));
+        enableMyLocation();
     }
-    // [END maps_wear_os_on_map_ready]
+    /**
+     * Enables the My Location layer if the fine location permission has been granted.
+     */
+    @SuppressLint("MissingPermission")
+    private void enableMyLocation() {
+        // 1. Check if permissions are granted, if so, enable the my location layer
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, permission.ACCESS_COARSE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            map.setMyLocationEnabled(true);
+            return;
+        }
+
+        // 2. Otherwise, request location permissions from the user.
+        if (!EasyPermissions.hasPermissions(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+            // Si los permisos de ubicación no se han otorgado, solicitarlos al usuario
+            EasyPermissions.requestPermissions(
+                    this,
+                    "Se requieren permisos de ubicación para continuar",
+                    LOCATION_PERMISSION_REQUEST_CODE,
+                    Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+    }
+
+    @Override
+    public boolean onMyLocationButtonClick() {
+        Toast.makeText(this, "MyLocation button clicked", Toast.LENGTH_SHORT).show();
+        // Return false so that we don't consume the event and the default behavior still occurs
+        // (the camera animates to the user's current position).
+        return false;
+    }
+
+    @Override
+    public void onMyLocationClick(@NonNull Location location) {
+        Toast.makeText(this, "Current location:\n" + location, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        if (requestCode != LOCATION_PERMISSION_REQUEST_CODE) {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            return;
+        }
+
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, Arrays.asList(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))) {
+            // Al menos uno de los permisos de ubicación se ha denegado permanentemente
+            // Mostrar un diálogo al usuario para que lo dirija a la configuración de la aplicación y permita los permisos
+            new AppSettingsDialog.Builder(this)
+                    .setTitle("Permisos denegados")
+                    .setRationale("Para utilizar esta función se necesitan permisos de ubicación")
+                    .setPositiveButton("Configuración")
+                    .setNegativeButton("Cancelar")
+                    .setRequestCode(LOCATION_PERMISSION_REQUEST_CODE)
+                    .build()
+                    .show();
+        } else if (EasyPermissions.hasPermissions(this, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)) {
+            // Ambos permisos de ubicación se han otorgado
+            enableMyLocation();
+        } else {
+            // Los permisos de ubicación no se han otorgado, solicitarlos al usuario
+            EasyPermissions.requestPermissions(
+                    this,
+                    "Se requieren permisos de ubicación para continuar",
+                    LOCATION_PERMISSION_REQUEST_CODE,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+            );
+        }
+    }
+
+    @Override
+    protected void onResumeFragments() {
+        super.onResumeFragments();
+        if (permissionDenied) {
+            // Permission was not granted, display error dialog.
+            showMissingPermissionError();
+            permissionDenied = false;
+        }
+    }
+
+    /**
+     * Displays a dialog with error message explaining that the location permission is missing.
+     */
+    private void showMissingPermissionError() {
+        new AppSettingsDialog.Builder(this)
+                .setTitle("Permisos denegados")
+                .setRationale("Para utilizar esta función se necesitan permisos de ubicación")
+                .setPositiveButton("Configuración")
+                .setNegativeButton("Cancelar")
+                .setRequestCode(LOCATION_PERMISSION_REQUEST_CODE)
+                .build()
+                .show();
+    }
 
     @Override
     public AmbientCallback getAmbientCallback() {
@@ -118,3 +238,5 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     // [END_EXCLUDE]
 }
 // [END maps_wear_os_swipe_dismiss_callback]
+
+

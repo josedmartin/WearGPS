@@ -18,17 +18,10 @@ package com.example.wearosmap;
 
 import android.os.Bundle;
 import android.util.Log;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.wear.ambient.AmbientModeSupport;
 import androidx.wear.ambient.AmbientModeSupport.AmbientCallback;
-import androidx.wear.widget.SwipeDismissFrameLayout;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 /**
  * Sample that shows how to set up a basic Google Map on Wear OS.
