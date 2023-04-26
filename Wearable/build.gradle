@@ -47,8 +47,6 @@ dependencies {
     implementation "androidx.core:core-ktx:1.9.0"
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.20'
     // [END_EXCLUDE]
-    compileOnly 'com.google.android.wearable:wearable:2.9.0'
-    implementation 'com.google.android.support:wearable:2.9.0'
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
 
     // This dependency is necessary for ambient mode
@@ -59,6 +57,10 @@ dependencies {
 
     // For developers using the Android Support Library
     implementation 'pub.devrel:easypermissions:2.0.1'
+
+    //Menu de Items
+    implementation 'com.google.android.support:wearable:2.9.0'
+    compileOnly 'com.google.android.wearable:wearable:2.9.0'
 
 }
 // [END maps_wear_os_dependencies]

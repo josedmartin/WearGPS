@@ -36,7 +36,7 @@ public class AmbientActivity extends AppCompatActivity implements
         super.onCreate(savedState);
 
         // Set the layout. It only contains a SupportMapFragment and a DismissOverlay.
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.map_activity);
 
         // Enable ambient support, so the map remains visible in simplified, low-color display
         // when the user is no longer actively using the app but the app is still visible on the
