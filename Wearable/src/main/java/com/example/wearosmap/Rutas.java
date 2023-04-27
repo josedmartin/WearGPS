@@ -1,9 +1,12 @@
 package com.example.wearosmap;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -40,9 +43,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-import com.google.maps.GeoApiContext;
-import com.google.maps.GeocodingApi;
-import com.google.maps.model.GeocodingResult;
 
 public class Rutas extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -116,16 +116,16 @@ public class Rutas extends AppCompatActivity implements OnMapReadyCallback {
                     Log.i("destination", destination);
 
                     // Pasar a coordenadas
-                    //String coordenadasDestino = obtenerCoordenadas(destination);
-                    String coordenadasDestino = "37.359261" + "," +"-5.986245";
+                    LatLng coordenadasDestino = obtenerCoordenadas(destination);
+
+                    //Añadimos marcador
                     map.addMarker(new MarkerOptions().position(coordenadasDestino).title("destination"));
-                    Log.i("Coordenadas Destino", coordenadasDestino);
 
                     // Construir la URL de la solicitud de ruta a la API
                     String apiKey = "AIzaSyDZf6KNEm24s_hRW_6KCbd7mBE26ybdDwQ";
                     String requestUrl = "https://maps.googleapis.com/maps/api/directions/json?" +
                             "origin=" + currentLatitude + "," + currentLongitude +
-                            "&destination=" + coordenadasDestino +
+                            "&destination=" + coordenadasDestino.latitude + "," + coordenadasDestino.longitude +
                             "&key=" + apiKey;
 
                     // Realizar la solicitud a la API de OpenRouteService en un hilo separado
@@ -142,23 +142,24 @@ public class Rutas extends AppCompatActivity implements OnMapReadyCallback {
     }
 
     //Función para obtener las coordenadas del destino
-    private static LatLng obtenerCoordenadas(String destino) {
-        GeoApiContext context = new GeoApiContext.Builder()
-                .apiKey("TU_API_KEY") // Reemplaza TU_API_KEY por tu clave de API de Geocoding de Google
-                .build();
+    public LatLng obtenerCoordenadas(String destination) {
+        Geocoder geocoder = new Geocoder(getApplicationContext());
+        List<Address> addresses;
+        LatLng latLng = null;
 
         try {
-            GeocodingResult[] results = GeocodingApi.geocode(context, destino).await();
-
-            if (results.length > 0) {
-                return results[0].geometry.location;
+            addresses = geocoder.getFromLocationName(destination, 1);
+            if (addresses != null && !addresses.isEmpty()) {
+                Address address = addresses.get(0);
+                latLng = new LatLng(address.getLatitude(), address.getLongitude());
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
+
+        return latLng;
     }
-    private class FetchDirectionsTask  extends AsyncTask<String, Void, String> {
+    public class FetchDirectionsTask  extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... urls) {
@@ -265,4 +266,5 @@ public class Rutas extends AppCompatActivity implements OnMapReadyCallback {
         }
 
     }
+
 }
