@@ -1,13 +1,11 @@
 package com.example.wearosmap;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.wear.widget.SwipeDismissFrameLayout;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -40,7 +39,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,12 +56,21 @@ public class Rutas extends AppCompatActivity implements OnMapReadyCallback {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.map_activity);
 
-        // Obtain the MapFragment and set the async listener to be notified when the map is ready.
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
+
+        //Activamos el quitar pantalla
+        final SwipeDismissFrameLayout mapFrameLayout = (SwipeDismissFrameLayout) findViewById(
+                R.id.map_container);
+        mapFrameLayout.addCallback(new SwipeDismissFrameLayout.Callback() {
+            @Override
+            public void onDismissed(SwipeDismissFrameLayout layout) {
+                onBackPressed();
+            }
+        });
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
     }
@@ -183,6 +190,7 @@ public class Rutas extends AppCompatActivity implements OnMapReadyCallback {
             return result;
         }
 
+        //Funcion que hace el calculo de las rutas
         private List<LatLng> decodePolyline(String encodedPolyline) {
             List<LatLng> polyline = new ArrayList<>();
             int index = 0;

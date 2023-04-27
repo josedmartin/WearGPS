@@ -19,11 +19,9 @@ package com.example.wearosmap;
 import android.Manifest;
 import android.Manifest.permission;
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -44,40 +42,28 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Arrays;
-import java.util.List;
 
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
 
-/**
- * Sample that shows how to set up a basic Google Map on Wear OS.
- */
-// [START maps_wear_os_swipe_dismiss_callback]
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, AmbientModeSupport.AmbientCallbackProvider,
         OnMyLocationButtonClickListener,
         OnMyLocationClickListener,
         ActivityCompat.OnRequestPermissionsResultCallback {
 
-    // [START_EXCLUDE silent]
     private SupportMapFragment mapFragment;
-    // [END_EXCLUDE]
 
     public void onCreate(Bundle savedState) {
         super.onCreate(savedState);
 
-        // Set the layout. It only contains a SupportMapFragment and a DismissOverlay.
         setContentView(R.layout.map_activity);
 
-        // Enable ambient support, so the map remains visible in simplified, low-color display
-        // when the user is no longer actively using the app but the app is still visible on the
-        // watch face.
-        // [START maps_wear_os_ambient_mode_support]
+        // activar ambient mode support
         AmbientModeSupport.AmbientController controller = AmbientModeSupport.attach(this);
         // [END maps_wear_os_ambient_mode_support]
         Log.d(MapActivity.class.getSimpleName(), "Is ambient enabled: " + controller.isAmbient());
 
-        // Retrieve the containers for the root of the layout and the map. Margins will need to be
-        // set on them to account for the system window insets.
+        // Quitar pantalla
         final SwipeDismissFrameLayout mapFrameLayout = (SwipeDismissFrameLayout) findViewById(
                 R.id.map_container);
         mapFrameLayout.addCallback(new SwipeDismissFrameLayout.Callback() {
@@ -87,7 +73,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         });
 
-        // Obtain the MapFragment and set the async listener to be notified when the map is ready.
+
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         if (mapFragment != null) {
@@ -95,17 +81,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-    /**
-     * Request code for location permission request.
-     *
-     * @see #onRequestPermissionsResult(int, String[], int[])
-     */
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-
-    /**
-     * Flag indicating whether a requested permission has been denied after returning in {@link
-     * #onRequestPermissionsResult(int, String[], int[])}.
-     */
     private boolean permissionDenied = false;
     private GoogleMap map;
 
@@ -119,12 +95,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         enableMyLocation();
     }
 
-    /**
-     * Enables the My Location layer if the fine location permission has been granted.
-     */
     @SuppressLint("MissingPermission")
     private void enableMyLocation() {
-        // 1. Check if permissions are granted, if so, enable the my location layer
+        // 1. Comprobar si los permisosn han sido aceptados
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED
                 || ContextCompat.checkSelfPermission(this, permission.ACCESS_COARSE_LOCATION)
@@ -133,7 +106,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             return;
         }
 
-        // 2. Otherwise, request location permissions from the user.
+        // 2. Perdir permisos
         if (!EasyPermissions.hasPermissions(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
             // Si los permisos de ubicación no se han otorgado, solicitarlos al usuario
             EasyPermissions.requestPermissions(
@@ -146,9 +119,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public boolean onMyLocationButtonClick() {
+        //Hace que la camara se mueva a la posición del usuario.
         Toast.makeText(this, "MyLocation button clicked", Toast.LENGTH_SHORT).show();
-        // Return false so that we don't consume the event and the default behavior still occurs
-        // (the camera animates to the user's current position).
         return false;
     }
 
@@ -201,9 +173,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-    /**
-     * Displays a dialog with error message explaining that the location permission is missing.
-     */
     private void showMissingPermissionError() {
         new AppSettingsDialog.Builder(this)
                 .setTitle("Permisos denegados")
@@ -218,21 +187,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public AmbientCallback getAmbientCallback() {
         return new AmbientCallback() {
-            /**
-             * Starts ambient mode on the map.
-             * The API swaps to a non-interactive and low-color rendering of the map when the user is no
-             * longer actively using the app.
-             */
             @Override
             public void onEnterAmbient(Bundle ambientDetails) {
                 super.onEnterAmbient(ambientDetails);
                 mapFragment.onEnterAmbient(ambientDetails);
             }
 
-            /**
-             * Exits ambient mode on the map.
-             * The API swaps to the normal rendering of the map when the user starts actively using the app.
-             */
             @Override
             public void onExitAmbient() {
                 super.onExitAmbient();
