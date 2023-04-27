@@ -19,13 +19,25 @@ package com.example.wearosmap;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.view.View;
 import android.widget.TextView;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.List;
 import android.support.wearable.view.BoxInsetLayout;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MainActivity extends Activity {
     private SpeechRecognizer speechRecognizer;
@@ -77,11 +89,22 @@ public class MainActivity extends Activity {
         if (requestCode == SPEECH_REQUEST_CODE && resultCode == RESULT_OK) {
             List<String> results = data.getStringArrayListExtra(
                     RecognizerIntent.EXTRA_RESULTS);
-            String spokenText = results.get(0);
-            //Hacer algo con el resultado
+
+            //Destino y pasarlo a la clase para calcular la ruta
+            String destination = results.get(0);
+
+            // Crear un intent para iniciar la actividad Rutas
+            Intent intent = new Intent(MainActivity.this, Rutas.class);
+            intent.putExtra("destination", destination);
+
+            // Iniciar la actividad
+            startActivity(intent);
+
+
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
+
 }
 
 
