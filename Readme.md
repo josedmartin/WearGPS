@@ -12,9 +12,8 @@ Todo el paso 1 es necesario ya que si no cogerá tu ubicación actual del emulad
    esto es necesario para poder hacer una búsqueda sobre el destino al que quieras ir. También hay que decir que cuando lo probé por primera vez funcionaba sin problemas, 
    las ultimas veces que lo probé no me captaba la voz, seguimos sin saber el porqué. Pero creando un nuevo emulador y haciendo todo de nuevo se soluciona.
    
-3. Un ultimo cambio, un poco más opcional, que sirve para cambiar el idioma del emulador y que así si te reconozca la voz en Español. Busca en las apps de tu dispositivo una  
-   llamada "Custom Locale" y seleccionar español, si no existe tienes que crearla escribiendo "es-ES". Si la app "Custom Locale" no te aparece tienes que activar el modo desarrollador,
-   esto en cada dispositivo es diferente, pero suele ser hacer un numero de pulsaciones en "Serial Number", una vez activado, haz lo dicho anteriormente.
+3. Un ultimo cambio, un poco más opcional, que sirve para cambiar el idioma del emulador y que así si te reconozca la voz en Español. Busca en las apps de tu dispositivo 
+   una llamada "Custom Locale" y seleccionar español, si no existe tienes que crearla escribiendo "es-ES". Si la app "Custom Locale" no te aparece tienes que activar el modo                  desarrollador, esto en cada dispositivo es diferente, pero suele ser hacer un numero de pulsaciones en "Serial Number", una vez activado, haz lo dicho anteriormente.
    
 Hecho todo esto, la applicación estaría lista para funcionar.
 
