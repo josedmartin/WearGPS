@@ -7,36 +7,75 @@
     android:paddingLeft="@dimen/box_inset_layout_padding_left"
     android:paddingRight="@dimen/box_inset_layout_padding_right"
     android:paddingTop="@dimen/box_inset_layout_padding_top"
-    app:layout_box="all">
+    app:layout_box="all"
+    android:background="#20B2AA">
 
-  <LinearLayout
+  <FrameLayout
       android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:orientation="vertical"
-      android:gravity="center">
+      android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/option1"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Quiero ir a..."
-        android:textStyle="bold"
-        android:clickable="true"
-        android:textSize="15sp"
-        android:layout_margin="10dp"
-        android:onClick="onOption1Clicked" />
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_gravity="center">
 
-    <TextView
-        android:id="@+id/option2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="¿Dónde estoy?"
-        android:textStyle="bold"
-        android:clickable="true"
-        android:textSize="15sp"
-        android:layout_margin="10dp"
-        android:onClick="onOption2Clicked" />
-  </LinearLayout>
+      <LinearLayout
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal"
+          android:gravity="center_vertical"
+          android:layout_marginBottom="8dp">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/camino"
+            android:layout_marginEnd="5dp" />
+
+        <TextView
+            android:id="@+id/option1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Quiero ir a..."
+            android:textStyle="bold"
+            android:clickable="true"
+            android:textSize="15sp"
+            android:layout_marginStart="5dp"
+            android:onClick="onOption1Clicked" />
+
+      </LinearLayout>
+
+      <LinearLayout
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal"
+          android:gravity="center_vertical"
+          android:layout_marginTop="8dp"
+          android:layout_marginBottom="8dp">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ubicacion"
+            android:layout_marginEnd="5dp" />
+
+        <TextView
+            android:id="@+id/option2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="¿Dónde estoy?"
+            android:textStyle="bold"
+            android:clickable="true"
+            android:textSize="15sp"
+            android:layout_marginStart="5dp"
+            android:onClick="onOption2Clicked" />
+
+      </LinearLayout>
+
+    </LinearLayout>
+
+  </FrameLayout>
 
 </android.support.wearable.view.BoxInsetLayout>
-
